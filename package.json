@@ -1,6 +1,6 @@
 {
   "name": "intercom-for-hapi",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "easily access the intercom client from within your Hapi app",
   "main": "lib/index.js",
   "scripts": {
