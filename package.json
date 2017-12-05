@@ -4,7 +4,7 @@
   "description": "easily access the intercom client from within your Hapi app",
   "main": "lib/index.js",
   "scripts": {
-    "test": "lab -t 100 -a code -L",
+    "test": "lab -t 100 -a code",
     "test-cov-html": "lab -r html -o coverage.html -a code"
   },
   "repository": {
