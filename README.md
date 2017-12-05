@@ -15,29 +15,17 @@ The purpose of this plugin is simply to allow you to instantiate the Intercom cl
 ### Example
 
 ```js
-var Hapi = require('hapi');
-var server = new Hapi.Server();
-server.connection({ host: 'localhost' });
+const Hapi = require('hapi');
+const server = new Hapi.Server();
 
-var options = {
+const options = {
     token: '123sds88'   // REQUIRED
 };
 
 // Register the plugin
-server.register({
-    register: require('intercom-for-hapi'),
+await server.register({
+    plugin: require('intercom-for-hapi'),
     options: options
-}, function (err) {
-
-    if (err) {
-        console.error(err);
-    }
-    else {
-        server.start(function () {
-
-            console.info('Server started at ' + server.info.uri);
-        });
-    }
 });
 
 // Declare a route that uses it
@@ -47,17 +35,14 @@ server.route( {
     'handler': usersHandler
 });
 
-function usersHandler (request, reply) {
+await server.start();
+
+function usersHandler (request, h) {
 
     var client = request.intercom;     // also available via request.server.app.intercom
 
     client.users.list(function (res) {
-      return reply(res);
+      return res;
     });
 };
-
-server.start(function() {
-
-    console.log("Server started at " + server.info.uri);
-});
 ```
