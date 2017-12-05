@@ -4,7 +4,6 @@
 
 const Code = require('code');
 const Hapi = require('hapi');
-const Hoek = require('hoek');
 const Lab = require('lab');
 const Intercom = require('../lib');
 
@@ -18,76 +17,63 @@ const expect = Code.expect;
 const fakeToken = '1d23x88';
 
 
-it('cannot be registered (no token)', (done) => {
+it('cannot be registered (no token)', async () => {
 
-    const fn = (options) => {
-
-        return () => {
-
-            const server = new Hapi.Server();
-            server.connection();
-            server.register({ register: Intercom }, Hoek.ignore);
-            return server;
-        };
+    const fn = async (options) => {
+        const server = new Hapi.Server();
+        await server.start();
+        await server.register({ plugin: Intercom });
+        return server;
     };
 
-    expect(fn()).to.throw();
-    done();
+    await expect(fn()).to.reject();
 });
 
 
-it('can be registered (with token)', (done) => {
+it('can be registered (with token)', async () => {
 
     const server = new Hapi.Server();
     const plugin = {
-        register: Intercom,
+        plugin: Intercom,
         options: { token: fakeToken }
     };
+    
+    await server.register(plugin);
 
-    server.register(plugin, (err) => {
-
-        expect(err).to.not.exist();
-        expect(server.app.intercom).to.exist();
-        done();
-    });
+    expect(server.app.intercom).to.exist();
 });
 
 
-it('decorates the request object with a intercom prop', (done) => {
+it('decorates the request object with a intercom prop', async () => {
 
     const server = new Hapi.Server();
     const plugin = {
-        register: Intercom,
+        plugin: Intercom,
         options: { token: fakeToken }
     };
 
-    server.register(plugin, (err) => {
+    await server.register(plugin);
 
-        expect(err).to.not.exist();
+    await server.start();
+    server.route({
+        method: 'GET',
+        path: '/',
+        config: {
+            handler: (request, h) => {
 
-        server.connection();
-        server.route({
-            method: 'GET',
-            path: '/',
-            config: {
-                handler: (request, reply) => {
-
-                    expect(request.intercom).to.exist();
-                    return reply('GREAT SUCCESS!');
-                }
+                expect(request.intercom).to.exist();
+                return 'GREAT SUCCESS!';
             }
-        });
-
-        const payload = {
-            method: 'GET',
-            url: '/'
-        };
-
-        server.inject(payload, (response) => {
-
-            expect(response.statusCode).to.equal(200);
-            expect(response.result).to.equal('GREAT SUCCESS!');
-            done();
-        });
+        }
     });
+
+    const payload = {
+        method: 'GET',
+        url: '/'
+    };
+
+    const response = await server.inject(payload);
+
+    expect(response.statusCode).to.equal(200);
+    expect(response.result).to.equal('GREAT SUCCESS!');
 });
