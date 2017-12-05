@@ -22,12 +22,11 @@
   },
   "homepage": "https://github.com/scoutforpets/intercom-for-hapi#readme",
   "dependencies": {
-    "intercom-client": "^2.8.8"
+    "intercom-client": "^2.9.1"
   },
   "devDependencies": {
-    "code": "^4.1.0",
-    "hapi": "^16.4.3",
-    "hoek": "^4.1.1",
-    "lab": "^14.0.1"
+    "code": "^5.1.2",
+    "hapi": "^17.1.1",
+    "lab": "^15.1.2"
   }
 }
